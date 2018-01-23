@@ -37,6 +37,7 @@
 #include <map>
 #include <vector>
 #include <string>
+#include <std_msgs/Bool.h>
 
 namespace industrial_robot_client
 {
@@ -127,6 +128,7 @@ public:
 protected:
   void trajectoryStop();
 
+  ros::Publisher async_failure_pub_;
   boost::thread* streaming_thread_;
   boost::mutex mutex_;
   int current_point_;

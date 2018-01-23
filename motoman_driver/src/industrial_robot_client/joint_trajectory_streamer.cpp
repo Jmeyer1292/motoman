@@ -79,6 +79,9 @@ bool JointTrajectoryStreamer::init(SmplMsgConnection* connection, const std::vec
   ROS_INFO("Unlocking mutex");
   this->mutex_.unlock();
 
+
+  async_failure_pub_ = node_.advertise<std_msgs::Bool>("async_failure", 1);
+
   return rtn;
 }
 
@@ -117,7 +120,14 @@ void JointTrajectoryStreamer::jointTrajectoryCB(const motoman_msgs::DynamicJoint
   // calc new trajectory
   std::vector<SimpleMessage> new_traj_msgs;
   if (!trajectory_to_msgs(msg, &new_traj_msgs))
+  {
+    ROS_ERROR("ABORTING TRAJECTORY JM");
+    this->mutex_.lock();
+    trajectoryStop();
+    this->mutex_.unlock();
+
     return;
+  }
 
   // send command messages to robot
   send_to_robot(new_traj_msgs);
@@ -153,7 +163,13 @@ void JointTrajectoryStreamer::jointTrajectoryCB(const trajectory_msgs::JointTraj
   // calc new trajectory
   std::vector<SimpleMessage> new_traj_msgs;
   if (!trajectory_to_msgs(msg, &new_traj_msgs))
+  {
+    ROS_ERROR("ABORTING TRAJECTORY JM");
+    this->mutex_.lock();
+    trajectoryStop();
+    this->mutex_.unlock();
     return;
+  }
 
   // send command messages to robot
   send_to_robot(new_traj_msgs);

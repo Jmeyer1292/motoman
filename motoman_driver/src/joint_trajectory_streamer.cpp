@@ -473,6 +473,9 @@ void MotomanJointTrajectoryStreamer::streamingThread()
 // override trajectoryStop to send MotionCtrl message
 void MotomanJointTrajectoryStreamer::trajectoryStop()
 {
+  std_msgs::Bool b;
+  b.data = true;
+  this->async_failure_pub_.publish(b);
   this->state_ = TransferStates::IDLE;  // stop sending trajectory points
   motion_ctrl_.stopTrajectory();
 }

@@ -62,6 +62,8 @@ JointTrajectoryAction::JointTrajectoryAction() :
   std::map<int, RobotGroup> robot_groups;
   getJointGroups("topic_list", robot_groups);
 
+  async_failure_sub_ = node_.subscribe("async_failure", 0, &JointTrajectoryAction::onAsyncFailure, this);
+
   for (int i = 0; i < robot_groups.size(); i++)
   {
 
@@ -112,6 +114,15 @@ JointTrajectoryAction::JointTrajectoryAction() :
 
 JointTrajectoryAction::~JointTrajectoryAction()
 {
+}
+
+void JointTrajectoryAction::onAsyncFailure(const std_msgs::Bool::ConstPtr &msg)
+{
+  if (msg->data)
+  {
+    ROS_ERROR("Async failure");
+    abortGoal();
+  }
 }
 
 void JointTrajectoryAction::robotStatusCB(

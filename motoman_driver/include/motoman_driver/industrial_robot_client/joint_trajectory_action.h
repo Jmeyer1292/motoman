@@ -46,6 +46,8 @@
 #include <industrial_msgs/RobotStatus.h>
 #include <motoman_driver/industrial_robot_client/robot_group.h>
 #include <motoman_msgs/DynamicJointTrajectory.h>
+
+#include <std_msgs/Bool.h>
 namespace industrial_robot_client
 {
 namespace joint_trajectory_action
@@ -186,6 +188,10 @@ private:
    * \brief Cache of the last subscribed status message
    */
   industrial_msgs::RobotStatusConstPtr last_robot_status_;
+
+  ros::Subscriber async_failure_sub_;
+
+  void onAsyncFailure(const std_msgs::Bool::ConstPtr& msg);
 
   /**
    * \brief The watchdog period (seconds)
